@@ -158,11 +158,18 @@ async function confirmDeleteProfile(profileId) {
 
 async function activateDemoMode(response) {
   const contentType = response.headers.get('Content-Type') || '';
-  // Static hosting returns HTML for API routes:
-  // - 404 HTML: Standard static host behavior
-  // - 200 HTML: SPA fallback (serves index.html for all routes)
-  // - 5xx HTML: Proxy errors - fall through to offline mode
-  if (contentType.includes('html') && (response.status === 404 || response.status === 200)) {
+  const status = response.status;
+
+  // Exclude: WAF challenges, server errors
+  if (status === 403 || status >= 500) return false;
+
+  // Static hosting patterns:
+  // 1. HTML response (GitHub Pages, Netlify, Firebase)
+  // 2. Bare 404 - no content-type, empty body (Cloudflare Pages)
+  const isHtml404or200 = contentType.includes('html') && (status === 404 || status === 200);
+  const isBare404 = status === 404 && !contentType && response.headers.get('Content-Length') === '0';
+
+  if (isHtml404or200 || isBare404) {
     state.demoMode = true;
     setDemoMode(true);
     await syncSetting('demoMode', true);
