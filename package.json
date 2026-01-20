@@ -1,0 +1,8 @@
+{
+  "name": "task-tracker",
+  "version": "0.1.0",
+  "scripts": {
+    "start": "bun run server/index.js",
+    "dev": "bun --watch run server/index.js"
+  }
+}
