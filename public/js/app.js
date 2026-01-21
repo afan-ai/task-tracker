@@ -3,7 +3,7 @@ import { generateUUID, parseYMD, buildYMD, todayInt, addDays, getWeekStart, el }
 import { createBuffer, stencilAll, setProfileIdGetter } from './stencil.js';
 import { initDB, syncProfilesFromServer, syncSettingsFromServer, syncJobsFromServer, getAllProfiles, getSetting, getJobsByProfile, syncJob, syncDeleteJob, syncProfile, syncDeleteProfile, syncSetting, setDemoMode, showToast, showSuccess, showError, gatherExportData, downloadJson, parseImportFile, importToLocal, setPendingImport, getPendingImport, getAllJobs } from './storage.js';
 import { showPrivacyToast, hidePrivacyToast, showOfflineToast, hideOfflineToast, showDemoToast, showPortToast, obfuscateName } from './privacy.js';
-import { renderCalendarHeader, renderCalendarGrid, renderSidebarContent, renderSidebarHeader, showModal, hideModal, showJobEditorModal, showDeleteModal, showJobDetailModal, showProfileEditorModal, showProfileDeleteModal, showSettingsModal, showImportExportModal, showOfflineExportWarning, setUICallbacks } from './ui.js';
+import { renderCalendarHeader, renderCalendarGrid, renderSidebarContent, renderSidebarHeader, showModal, hideModal, showJobEditorModal, showDeleteModal, showJobDetailModal, showProfileEditorModal, showProfileDeleteModal, showSettingsModal, showImportExportModal, showOfflineExportWarning, showHelpModal, setUICallbacks } from './ui.js';
 
 // === APPLICATION STATE ===
 
@@ -335,6 +335,9 @@ function attachEventListeners() {
   // Import/Export
   document.getElementById('import-export-btn').addEventListener('click', () => showImportExportModal());
 
+  // Help
+  document.getElementById('help-btn').addEventListener('click', () => showHelpModal());
+
   document.getElementById('new-job-btn').addEventListener('click', async () => {
     if (await serverCheck()) showJobEditorModal(null);
   });
@@ -662,11 +665,11 @@ function triggerImport() {
     showModal(
       el('div', null,
         el('h2', null, 'Import Data'),
-        el('p', null, 'This will replace ALL existing data including profiles, jobs, and settings.'),
+        el('p', { class: 'divider' }, 'This will replace ALL existing data including profiles, jobs, and settings.'),
         el('div', { class: 'form-row form-row-checkbox' },
           el('label', null, checkbox, ' I understand all existing data will be replaced')
         ),
-        el('div', { class: 'modal-actions' },
+        el('div', { class: 'modal-actions divider' },
           el('button', { type: 'button', class: 'btn-secondary', dataAction: 'close' }, 'Cancel'),
           importBtn
         )

@@ -872,6 +872,12 @@ body {
   color: var(--text-color);
 }
 
+.divider {
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--space-3);
+  margin-top: var(--space-3);
+}
+
 .modal-content p {
   margin-bottom: var(--space-2);
   color: var(--text-color);
@@ -1162,10 +1168,12 @@ body.offline .delete-options button:not(:last-child) {
 #sidebar-footer {
   padding: var(--space-4);
   border-top: 1px solid var(--border-color);
+  display: flex;
+  gap: var(--space-2);
 }
 
 #import-export-btn {
-  width: 100%;
+  flex: 1;
   height: var(--control-height);
   border-radius: var(--radius-pill);
   background: transparent;

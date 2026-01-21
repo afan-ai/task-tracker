@@ -302,6 +302,7 @@ export function showModal(content) {
   container.style.display = 'flex';
   document.addEventListener('keydown', handleModalEscape);
   modalContent.addEventListener('click', handleModalAction);
+  backdrop.addEventListener('click', e => { if (e.target === backdrop) hideModal(); });
 }
 
 export function hideModal() {
@@ -369,7 +370,7 @@ export function showJobDetailModal(job) {
 
   const content = el('div', null,
     el('h2', { class: blurClass }, displayName),
-    el('p', null, el('strong', null, 'Frequency:'), ' ', freqLabel),
+    el('p', { class: 'divider' }, el('strong', null, 'Frequency:'), ' ', freqLabel),
     el('p', null, el('strong', null, 'Time:'), ' ', el('span', { class: blurClass }, timeStr)),
     el('p', null, el('strong', null, 'Start:'), ' ', formatDateInt(job.start_date)),
     el('p', null, el('strong', null, 'End:'), ' ', job.end_date ? formatDateInt(job.end_date) : 'None')
@@ -385,7 +386,7 @@ export function showJobDetailModal(job) {
   }
 
   content.append(
-    el('div', { class: 'modal-actions' },
+    el('div', { class: 'modal-actions divider' },
       el('button', { type: 'button', class: 'btn-secondary', dataAction: 'close' }, 'Close'),
       el('button', { type: 'button', class: 'btn-primary', dataAction: 'edit-job', dataJobId: job.id }, 'Edit')
     )
@@ -495,7 +496,7 @@ export function showJobEditorModal(job = null) {
     el('input', { type: 'hidden', id: 'job-id', value: j.id }),
     weeklyModeInput,
     monthlyModeInput,
-    el('div', { class: 'form-row' }, el('label', { for: 'job-name' }, 'Name'), nameInput),
+    el('div', { class: 'form-row divider' }, el('label', { for: 'job-name' }, 'Name'), nameInput),
     el('div', { class: 'form-row', id: 'time-row' }, el('label', { for: 'job-time' }, 'Time (optional)'), timeInput),
     el('div', { class: 'form-row' }, el('label', { for: 'job-frequency' }, 'Frequency'),
       createDropdown('job-frequency', [
@@ -521,7 +522,7 @@ export function showJobEditorModal(job = null) {
     ),
     el('div', { class: 'form-row' }, el('label', { for: 'job-start' }, 'Start date'), startInput),
     el('div', { class: 'form-row' }, el('label', { for: 'job-end' }, 'End date (optional)'), endInput),
-    el('div', { class: 'modal-actions' },
+    el('div', { class: 'modal-actions divider' },
       el('button', { type: 'button', class: 'btn-secondary', dataAction: 'close' }, 'Cancel'),
       saveBtn
     )
@@ -727,7 +728,7 @@ export function showDeleteModal(job, selectedDate = null) {
   const isRecurring = job.frequency !== 'once';
 
   const nameSpan = el('span', privacyMode ? { class: 'privacy-blur' } : null, displayName);
-  const actions = el('div', { class: 'modal-actions delete-options' });
+  const actions = el('div', { class: 'modal-actions delete-options divider' });
 
   if (isRecurring && selectedDate) {
     actions.append(
@@ -743,7 +744,7 @@ export function showDeleteModal(job, selectedDate = null) {
   showModal(
     el('div', null,
       el('h2', null, 'Delete Job'),
-      el('p', null, 'Delete "', nameSpan, '"?'),
+      el('p', { class: 'divider' }, 'Delete "', nameSpan, '"?'),
       actions
     )
   );
@@ -759,11 +760,11 @@ export function showProfileEditorModal(profile = null) {
   nameInput.value = profile?.name || '';
 
   const form = el('form', { id: 'profile-form' },
-    el('div', { class: 'form-row' },
+    el('div', { class: 'form-row divider' },
       el('label', { for: 'profile-name' }, 'Name'),
       nameInput
     ),
-    el('div', { class: 'modal-actions' },
+    el('div', { class: 'modal-actions divider' },
       el('button', { type: 'button', class: 'btn-secondary', dataAction: 'close' }, 'Cancel'),
       el('button', { type: 'submit', class: 'btn-primary' }, 'Save')
     )
@@ -790,8 +791,8 @@ export function showProfileDeleteModal(profile) {
   showModal(
     el('div', null,
       el('h2', null, 'Delete Profile'),
-      el('p', null, 'Delete profile "', profile.name, '"? All jobs in this profile will be deleted.'),
-      el('div', { class: 'modal-actions' },
+      el('p', { class: 'divider' }, 'Delete profile "', profile.name, '"? All jobs in this profile will be deleted.'),
+      el('div', { class: 'modal-actions divider' },
         el('button', { type: 'button', class: 'btn-secondary', dataAction: 'close' }, 'Cancel'),
         el('button', { type: 'button', class: 'btn-danger', dataAction: 'delete-profile', dataProfileId: profile.id }, 'Delete')
       )
@@ -809,7 +810,7 @@ export function showSettingsModal() {
 
   const content = el('div', null,
     el('h2', null, 'Settings'),
-    el('div', { class: 'form-row' },
+    el('div', { class: 'form-row divider' },
       el('label', { for: 'settings-theme' }, 'Theme'),
       createDropdown('settings-theme', themes, state.theme, v => window.setTheme(v))
     ),
@@ -831,7 +832,7 @@ export function showSettingsModal() {
   }
 
   content.append(
-    el('div', { class: 'modal-actions' },
+    el('div', { class: 'modal-actions divider' },
       el('button', { type: 'button', class: 'btn-secondary', dataAction: 'close' }, 'Close')
     )
   );
@@ -853,7 +854,7 @@ export function showImportExportModal() {
   showModal(
     el('div', null,
       el('h2', null, 'Import / Export'),
-      el('div', { class: 'modal-actions', style: 'flex-direction: column;' },
+      el('div', { class: 'modal-actions divider', style: 'flex-direction: column;' },
         el('button', { type: 'button', class: 'btn-secondary', style: 'width: 100%;', dataAction: 'export' }, 'Export Data'),
         importBtn,
         el('button', { type: 'button', class: 'btn-secondary', dataAction: 'close' }, 'Cancel')
@@ -872,13 +873,30 @@ export function showOfflineExportWarning() {
   showModal(
     el('div', null,
       el('h2', null, 'Export Data'),
-      el('p', null, 'Server unreachable. Local data may not reflect recent changes.'),
+      el('p', { class: 'divider' }, 'Server unreachable. Local data may not reflect recent changes.'),
       el('div', { class: 'form-row form-row-checkbox' },
         el('label', null, checkbox, ' I understand')
       ),
-      el('div', { class: 'modal-actions' },
+      el('div', { class: 'modal-actions divider' },
         el('button', { type: 'button', class: 'btn-secondary', dataAction: 'close' }, 'Cancel'),
         exportBtn
+      )
+    )
+  );
+}
+
+export function showHelpModal() {
+  showModal(
+    el('div', null,
+      el('h2', null, 'Task Tracker: Help'),
+      el('p', { class: 'divider' }, el('strong', null, 'New Job'), ' - Create a task.'),
+      el('p', null, el('strong', null, 'Click a job'), ' - View details. Edit or delete from there.'),
+      el('p', null, el('strong', null, 'Delete options'), ' - Remove the task.'),
+      el('p', null, el('strong', null, 'Profiles'), ' - Separate task lists. Switch via header dropdown.'),
+      el('p', null, el('strong', null, 'Privacy (eye icon)'), ' - Blurs task names for screen sharing.'),
+      el('div', { class: 'modal-actions divider', style: 'justify-content: space-between; align-items: center;' },
+        el('span', null, 'v0.1 (beta) - License: AGPL-3.0'),
+        el('button', { type: 'button', class: 'btn-secondary', dataAction: 'close' }, 'Close')
       )
     )
   );
