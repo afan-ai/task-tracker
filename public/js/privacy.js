@@ -6,7 +6,7 @@ function seededRandom(seed) {
   for (let i = 0; i < seed.length; i++) {
     h = ((h << 5) - h + seed.charCodeAt(i)) | 0;
   }
-  return function() {
+  return () => {
     h = (h * 1103515245 + 12345) | 0;
     return (h >>> 16) / 65536;
   };

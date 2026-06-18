@@ -20,7 +20,7 @@ function validateJob(body) {
   if (typeof body.name !== 'string' || body.name.length < 1 || body.name.length > 200)
     return 'name must be 1-200 characters';
   if (!FREQUENCIES.includes(body.frequency))
-    return 'frequency must be one of: ' + FREQUENCIES.join(', ');
+    return `frequency must be one of: ${FREQUENCIES.join(', ')}`;
   if (!Number.isInteger(body.start_date))
     return 'start_date must be an integer';
   if (body.end_date != null && !Number.isInteger(body.end_date))
@@ -152,7 +152,7 @@ Bun.serve({
     }
 
     let filePath = path === '/' ? '/index.html' : path;
-    const resolved = resolve(PUBLIC_DIR, '.' + filePath);
+    const resolved = resolve(PUBLIC_DIR, `.${filePath}`);
     if (!resolved.startsWith(PUBLIC_DIR)) {
       return new Response('Forbidden', { status: 403 });
     }

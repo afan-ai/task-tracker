@@ -638,6 +638,28 @@ async function doExport() {
   showPortToast('Data exported');
 }
 
+function showImportConfirm() {
+  const importBtn = el('button', { type: 'button', class: 'btn-danger', dataAction: 'do-import' }, 'Import');
+  importBtn.disabled = true;
+
+  const checkbox = el('input', { type: 'checkbox' });
+  checkbox.addEventListener('change', () => { importBtn.disabled = !checkbox.checked; });
+
+  showModal(
+    el('div', null,
+      el('h2', null, 'Import Data'),
+      el('p', { class: 'divider' }, 'This will replace ALL existing data including profiles, jobs, and settings.'),
+      el('div', { class: 'form-row form-row-checkbox' },
+        el('label', null, checkbox, ' I understand all existing data will be replaced')
+      ),
+      el('div', { class: 'modal-actions divider' },
+        el('button', { type: 'button', class: 'btn-secondary', dataAction: 'close' }, 'Cancel'),
+        importBtn
+      )
+    )
+  );
+}
+
 function triggerImport() {
   hideModal();
   const input = document.createElement('input');
@@ -655,28 +677,22 @@ function triggerImport() {
       return;
     }
 
-    // File valid, show confirmation
-    const importBtn = el('button', { type: 'button', class: 'btn-danger', dataAction: 'do-import' }, 'Import');
-    importBtn.disabled = true;
-
-    const checkbox = el('input', { type: 'checkbox' });
-    checkbox.addEventListener('change', () => { importBtn.disabled = !checkbox.checked; });
-
-    showModal(
-      el('div', null,
-        el('h2', null, 'Import Data'),
-        el('p', { class: 'divider' }, 'This will replace ALL existing data including profiles, jobs, and settings.'),
-        el('div', { class: 'form-row form-row-checkbox' },
-          el('label', null, checkbox, ' I understand all existing data will be replaced')
-        ),
-        el('div', { class: 'modal-actions divider' },
-          el('button', { type: 'button', class: 'btn-secondary', dataAction: 'close' }, 'Cancel'),
-          importBtn
-        )
-      )
-    );
+    showImportConfirm();
   };
   input.click();
+}
+
+async function loadSampleData() {
+  try {
+    const res = await fetch('/sample.json');
+    if (!res.ok) throw new Error('not available');
+    pendingImportData = await parseImportFile(res);
+  } catch (e) {
+    showError(`Could not load sample data: ${e.message}`);
+    pendingImportData = null;
+    return;
+  }
+  showImportConfirm();
 }
 
 async function doImport() {
@@ -719,9 +735,9 @@ async function doImport() {
   updatePrivacyButton();
   state.privacyMode ? showPrivacyToast() : hidePrivacyToast();
 
-  // Refresh UI
+  // Refresh UI (realign weekStart to the imported firstDayOfWeek, staying on the current view)
   if (state.viewMode === 'week') {
-    state.weekStart = getWeekStart(todayInt(), state.firstDayOfWeek);
+    state.weekStart = getWeekStart(state.weekStart, state.firstDayOfWeek);
   }
   recomputeBuffer();
   renderAll();
@@ -846,7 +862,7 @@ function checkMemory(iterations = 10) {
     heapSamples.push(performance.memory.usedJSHeapSize);
   }
   const first = heapSamples[0];
-  const last = heapSamples[heapSamples.length - 1];
+  const last = heapSamples.at(-1);
   const growth = last - first;
   const growthMB = (growth / 1024 / 1024).toFixed(2);
   const passed = growth < 5 * 1024 * 1024;
@@ -871,6 +887,7 @@ window.setShowWeekends = setShowWeekends;
 window.handleExport = handleExport;
 window.doExport = doExport;
 window.triggerImport = triggerImport;
+window.loadSampleData = loadSampleData;
 window.doImport = doImport;
 
 // Need to expose state for inline handlers that reference state.jobs

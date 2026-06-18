@@ -38,7 +38,7 @@ db.run(`
 // Migration: add profile_id column if missing (for existing databases)
 try {
   db.run('ALTER TABLE jobs ADD COLUMN profile_id TEXT');
-} catch (e) { /* column already exists */ }
+} catch { /* column already exists */ }
 
 // Ensure default profile exists
 const defaultProfile = db.query('SELECT id FROM profiles LIMIT 1').get();

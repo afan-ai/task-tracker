@@ -87,8 +87,8 @@ export function renderSidebarContent(jobs) {
     list.append(
       el('li', { class: 'job-item', dataId: job.id },
         el('div', { class: 'job-info' },
-          el('div', { class: blurClass ? 'job-name ' + blurClass : 'job-name' }, displayName),
-          el('div', { class: 'job-schedule' }, scheduleText, el('span', { class: 'freq-badge ' + getFreqClass(job) }, getFreqCode(job)))
+          el('div', { class: blurClass ? `job-name ${blurClass}` : 'job-name' }, displayName),
+          el('div', { class: 'job-schedule' }, scheduleText, el('span', { class: `freq-badge ${getFreqClass(job)}` }, getFreqCode(job)))
         ),
         el('span', { class: 'job-actions' },
           el('button', { class: 'edit-btn', dataId: job.id, dataTooltip: 'Edit' }, '\u270E'),
@@ -203,12 +203,12 @@ export function renderCalendarGrid(year, month, buffer, epoch, jobs, viewMode = 
   const createJobEl = (job, timeContent, tooltip) => {
     const displayName = privacyMode ? obfuscateName(job.name, job.id) : job.name;
     const titleClass = 'job-title' + (privacyMode ? ' privacy-blur' : '');
-    const attrs = { class: 'day-job ' + getFreqClass(job), dataId: job.id };
+    const attrs = { class: `day-job ${getFreqClass(job)}`, dataId: job.id };
     if (tooltip) attrs.dataTooltip = tooltip;
     return el('div', attrs,
       el('span', { class: titleClass }, displayName),
       timeContent,
-      el('span', { class: 'freq-badge ' + getFreqClass(job) }, getFreqCode(job))
+      el('span', { class: `freq-badge ${getFreqClass(job)}` }, getFreqCode(job))
     );
   };
 
@@ -223,7 +223,7 @@ export function renderCalendarGrid(year, month, buffer, epoch, jobs, viewMode = 
 
     const dayHeader = el('div', { class: 'day-header' }, el('span', { class: 'day-num' }, String(day)));
     if (dayJobs.length > 0) {
-      dayHeader.append(el('span', { class: 'day-count' }, dayJobs.length + ' task' + (dayJobs.length > 1 ? 's' : '')));
+      dayHeader.append(el('span', { class: 'day-count' }, `${dayJobs.length} task${dayJobs.length > 1 ? 's' : ''}`));
     }
     dayCell.append(dayHeader);
 
@@ -257,10 +257,10 @@ export function renderCalendarGrid(year, month, buffer, epoch, jobs, viewMode = 
             const displayName = privacyMode ? obfuscateName(job.name, job.id) : job.name;
             const titleClass = 'job-title' + (privacyMode ? ' privacy-blur' : '');
             jobsContainer.append(
-              el('div', { class: 'day-job ' + getFreqClass(job), dataId: job.id, dataTooltip: tooltip },
-                el('span', { class: titleClass }, displayName + ' (x' + times.length + ')'),
-                el('div', { class: 'job-subtitle' }, 'Every ' + job.interval + ' ' + hourLabel + ' ',
-                  el('span', { class: 'freq-badge ' + getFreqClass(job) }, getFreqCode(job))
+              el('div', { class: `day-job ${getFreqClass(job)}`, dataId: job.id, dataTooltip: tooltip },
+                el('span', { class: titleClass }, `${displayName} (x${times.length})`),
+                el('div', { class: 'job-subtitle' }, `Every ${job.interval} ${hourLabel} `,
+                  el('span', { class: `freq-badge ${getFreqClass(job)}` }, getFreqCode(job))
                 )
               )
             );
@@ -272,7 +272,7 @@ export function renderCalendarGrid(year, month, buffer, epoch, jobs, viewMode = 
           let timeEl = null;
           if (job.frequency === 'hourly') {
             const hourLabel = job.interval === 1 ? 'hour' : 'hours';
-            timeEl = el('span', { class: 'job-time' }, 'Every ' + job.interval + ' ' + hourLabel);
+            timeEl = el('span', { class: 'job-time' }, `Every ${job.interval} ${hourLabel}`);
           } else if (job.time != null) {
             timeEl = el('span', { class: 'job-time' }, privacyMode ? obfuscateTime(job.id, true) : formatTimeShort(job.time));
           }
@@ -346,6 +346,9 @@ function handleModalAction(e) {
       break;
     case 'import':
       window.triggerImport();
+      break;
+    case 'load-sample':
+      window.loadSampleData();
       break;
     case 'do-export':
       window.doExport();
@@ -857,6 +860,7 @@ export function showImportExportModal() {
       el('div', { class: 'modal-actions divider', style: 'flex-direction: column;' },
         el('button', { type: 'button', class: 'btn-secondary', style: 'width: 100%;', dataAction: 'export' }, 'Export Data'),
         importBtn,
+        el('button', { type: 'button', class: 'btn-secondary', style: 'width: 100%;', dataAction: 'load-sample' }, 'Load Sample Data'),
         el('button', { type: 'button', class: 'btn-secondary', dataAction: 'close' }, 'Cancel')
       )
     )

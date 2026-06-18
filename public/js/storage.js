@@ -185,7 +185,7 @@ export async function syncJob(job) {
       showError('Storage full. Please delete some jobs.');
       return false;
     }
-    showError('Failed to save locally: ' + e.message);
+    showError(`Failed to save locally: ${e.message}`);
     return false;
   }
   if (_demoMode) return true;
@@ -214,7 +214,7 @@ export async function syncDeleteJob(id) {
   try {
     await deleteJob(id);
   } catch (e) {
-    showError('Failed to delete locally: ' + e.message);
+    showError(`Failed to delete locally: ${e.message}`);
     return false;
   }
   if (_demoMode) return true;
