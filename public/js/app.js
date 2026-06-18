@@ -160,16 +160,15 @@ async function activateDemoMode(response) {
   const contentType = response.headers.get('Content-Type') || '';
   const status = response.status;
 
-  // Exclude: WAF challenges, server errors
+  // Exclude: WAF challenges, server errors (a real backend that is merely erroring)
   if (status === 403 || status >= 500) return false;
 
-  // Static hosting patterns:
-  // 1. HTML response (GitHub Pages, Netlify, Firebase)
-  // 2. Bare 404 - no content-type, empty body (Cloudflare Pages)
-  const isHtml404or200 = contentType.includes('html') && (status === 404 || status === 200);
-  const isBare404 = status === 404 && !contentType && response.headers.get('Content-Length') === '0';
+  // Static host: a real backend always serves /api/profiles as 200 JSON, so any
+  // 404 (whatever its body/headers) means there is no backend. An HTML 200 covers
+  // SPA-fallback hosts that rewrite unknown paths to index.html.
+  const isStaticHost = status === 404 || (status === 200 && contentType.includes('html'));
 
-  if (isHtml404or200 || isBare404) {
+  if (isStaticHost) {
     state.demoMode = true;
     setDemoMode(true);
     await syncSetting('demoMode', true);
